@@ -40,7 +40,12 @@ def webhook():
 def processRequest(req):
     reply = "Processing, please wait..."
     # custom reply per client (fb messenger, etc.)
-    fb_message = {
+    fb_text = {
+        "message": {
+            "text": "this is a text message before an image:"
+        }
+    }
+    fb_image = {
         "attachment": {
             "type":"image",
             "payload":{
@@ -48,7 +53,7 @@ def processRequest(req):
             }
         }
     }
-    data = {"facebook": fb_message}
+    data = {"facebook": [fb_text, fb_image]}
     return {
         "speech": reply,
         "displayText": reply,

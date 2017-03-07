@@ -39,7 +39,16 @@ def webhook():
 
 def processRequest(req):
     reply = "Processing, please wait..."
-    data = {}
+    # custom reply per client (fb messenger, etc.)
+    fb_message = {
+        "attachment": {
+            "type":"image",
+            "payload":{
+                "url":"https://placeholdit.imgix.net/~text?txtsize=23&bg=ffffff&txtclr=000000&txt=250%C3%97250&w=250&h=250"
+            }
+        }
+    }
+    data = {"facebook": fb_message}
     return {
         "speech": reply,
         "displayText": reply,
@@ -47,6 +56,10 @@ def processRequest(req):
         "contextOut": [],
         "source": "webhook"
     }
+
+def sendMsgToBot(msg):
+    #TODO send a msg directly to the bot (in client format or api.ai format?)
+    print("TODO")
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))

@@ -7,9 +7,11 @@ install_aliases()
 from urllib.parse import urlparse, urlencode
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError
+from threading import Timer
 
 import json
 import os
+import urllib2
 
 from flask import Flask
 from flask import request
@@ -32,6 +34,13 @@ def webhook():
 
     print("\nResponse:")
     print(res)
+
+    # simulate async work by scheduling an event to be fired after 8 seconds
+    # handling the response and forwarding it to FB's integration app
+
+    #TODO we'll need to store the session id from this request and pass it onto the event!
+    t = Timer(5.0, triggerEvent)
+    t.start()
 
     r = make_response(res)
     r.headers['Content-Type'] = 'application/json'
@@ -60,8 +69,45 @@ def processRequest(req):
         "source": "webhook"
     }
 
+def triggerEvent():
+    event = {
+    "event":
+        {
+            "name": "my-event",
+            "data":
+            {
+                "text": "example custom event text"
+            }
+        },
+    "lang": "en",
+    "sessionId":"3e82039b-d2ba-485e-95af-b86cdc3d50e0",
+    "timezone":"America/New_York"
+    }
+
+    url = "https://api.api.ai/api/query?v=20160910";
+    headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer e9d2ad4aeba44c068483009befa3d83b'
+    }
+
+    req = urllib2.Request(url, json.dumps(event), headers)
+    response = urllib2.urlopen(req)
+    result = response.read()
+
+    print(result)
+
+    #TODO do we need to inject the "sender" into this response?
+
+    # forward response to client integration app (fb, slack, etc)
+    bot_url = "https://api-ai-fb-bot.herokuapp.com/api_ai_response"
+    bot_headers = {'Content-Type': 'application/json'}
+    bot_req = urllib2.Request(bot_url, result, bot_headers)
+    bot_response = urllib2.urlopen(bot_req)
+    bot_result = bot_response.read()
+    print(bot_result)
+
 def sendMsgToBot(msg):
-    #TODO send a msg directly to the bot (in client format or api.ai format?)
+    #TODO send a msg directly to the bot (in api.ai format)
     print("TODO")
 
 if __name__ == '__main__':

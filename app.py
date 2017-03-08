@@ -50,7 +50,7 @@ def processRequest(req):
     reply = "Processing, please wait..."
     # custom reply per client (fb messenger, etc.)
     fb_text = {
-        "text": "this is a text message before an image:"
+        "text": "Processing, please wait..."
     }
     fb_image = {
         "attachment": {
